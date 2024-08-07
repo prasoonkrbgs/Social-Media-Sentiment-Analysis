@@ -1,0 +1,118 @@
+extends layout
+
+block head
+    link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+
+block pageConfig
+  - var hideNav = true
+
+block content
+
+    a#github-corner(href='https://github.com/Lissy93/twitter-sentiment-visualisation', target = '_blank')
+        img(src='/images/github-corner.png', title='View source code and documentation on GitHub')
+
+    #part-1.hide-on-small-only
+        .row.absolute.home-row
+          .col.s10.m10.l6.offset-m1
+            .card-panel
+              h3 Introduction to Sentiment Sweep
+              p Sentiment Sweep aims to captcha the mood of the internet, either
+                | overall or towards a specific topic.
+                | It does this by analysing real-time Twitter data, and calculating
+                | how positive or negative each Tweet it.
+
+              p A series of dynamic data visualisations are then used to
+                | illustrate the results, and find trends between sentiment and
+                | other factors such as time of day, location, topic, country, people etc
+
+              p It's open sauce, and the code and documentation can be viewed
+                | on <a href='https://github.com/Lissy93/twitter-sentiment-visualisation'>GitHub</a>
+
+              a.waves-effect.waves-teal.btn-flat.pull-right(href='/about') Read More...
+              .row: br
+
+          .col.s10.m10.l6.offset-m1
+            .card-panel
+              h3 Get started, enter a search term...
+              .input-field
+                input#txtKeyword.validate(type='text')
+                label(for='txtKeyword') Enter a keyword, topic, brand, celebrity or search term
+              h3 ... or scroll down to view more data visualisations
+              span.waves-effect.waves-teal.btn-flat(onClick="document.location.href ='/now'")
+                  | The world according to Twitter is currently
+                  if averageSentiment > 0
+                    | <span style='color: green;'> <b> #{Math.round(averageSentiment*100)}%</b> positive </span>.
+                  else
+                     | <span style='color: darkred;'> <b> #{Math.round(averageSentiment * 100)}%</b> negative </span>.
+                  |  <a href='/now'> See More</a>
+
+        #chart.home-hexagons
+
+        a.scroll-down#scroll-1(href='#')
+            i.material-icons.large.center-align play_for_work
+            p.center-align Scroll Down
+
+        a#hex-details(href='/hexagons')
+            p The hexagon background is made up of Tweets from the past 60 seconds.
+                | Hover over a hexagon to read the associated Tweet.
+                | Sentiment is represented by color
+
+    #part-0.hide-on-small-only
+        p
+
+    .hide-on-med-and-up: include ./component_mobile
+
+    .section#part-2
+        h2 Sentiment Data Visualisations
+        p.flow-text.grey-text.darken-4 Click one of the links below to generate the chart with the latest Twitter data
+        .row(style='max-width: 1100px')
+          each page in pages
+            .col.s12.m4.l3.xl1.home-tile
+              a(href='/#{page.page}')
+                .card.home-card
+                  .card-image.waves-effect.waves-block.waves-light
+                    img(src='/images/thumbnails/thumb_#{page.index}.png')
+                  .card-content
+                    span.card-title.grey-text.text-darken-4= page.title
+
+        a#scroll-3.cursor-pointer.hide-mobile(style='display: none;')
+            p.center-align Tap for More Content
+
+
+    div#more-info-section(style='display: none;')
+        .row
+            .col.s12.offset-m2.m8.l6.offset-l3.xl4.offset-xl4
+                .card-panel.more-info
+                    h4.flow-text For more information....
+                    a.waves-effect.waves-teal.btn-flat.btn(href='/now') The World Now
+                    a.waves-effect.waves-teal.btn-flat.btn(href='/Search') Make a new Search
+                    a.waves-effect.waves-teal.btn-flat.btn(href='/about') About Sentiment Sweep
+                    a.waves-effect.waves-teal.btn-flat.btn(href='https://github.com/Lissy93/twitter-sentiment-visualisation') Source Code + Documentation
+                    a(href='http://aliciasykes.com') © Alicia Sykes 2018
+                    a(href='https://github.com/Lissy93/twitter-sentiment-visualisation/blob/dev/docs/LICENSE.md') Open sourced under MIT
+                .card-panel
+                    include ./component_social
+
+    footer
+        .footer-copyright
+            .row.text-center
+                .col.s12.m4
+                    a.small-grey(href='/about') About Sentiment Sweep
+                .col.s12.m4
+                    a.small-grey(href='https://github.com/Lissy93/twitter-sentiment-visualisation') Source Code and Documentation
+                .col.s12.m4
+                    a.small-grey(href='http://aliciasykes.com') &copy; Alicia Sykes 2018
+
+block scripts
+  script.
+    var homePage = true; // Show different hexagons
+    var results = !{JSON.stringify(data)}; // Get and parse Twitter results
+    var average = !{JSON.stringify(averageSentiment)}; // Average sentiment
+
+  script(type = 'text/javascript', src = '/bower_components/socketio/index.js')
+  script(type = 'text/javascript', src = '/javascripts/charts/home-page.js')
+  script(type = 'text/javascript', src = '/bower_components/d3/d3.min.js')
+  script(type = 'text/javascript', src = '/bower_components/hexbin/index.js')
+  script(type = 'text/javascript', src = '/bower_components/d3tip/index.js')
+  script(type='text/javascript', src='/javascripts/charts/hexagons-module.js')
+

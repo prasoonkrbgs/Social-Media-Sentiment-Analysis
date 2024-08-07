@@ -1,0 +1,63 @@
+extends layout
+block content
+    div.top-left-controls-light
+        .row
+            .col.s12
+                ul.tabs
+                    li.tab.col.s3
+                        a.active(href='/word-cloud') Cloud
+                    li.tab.col.s3(onClick='showLoader(); window.location="/word-scatter-plot/#{summary_text.searchTerm}"')
+                        a(href='/word-scatter-plot') Scatter
+
+        h2 Intro
+        p Word cloud shows keywords commonly used in the latest Tweets. <br>
+            | The colour indicates sentiment of the containing Tweet
+            | (red= negative, and green= positive),
+            | and the size of the word represents the frequency of use.
+        h2 Custom Twitter Data
+        br
+        label.active(for='txtKeyword') Enter Keyword (press Enter to search)
+        input#txtKeyword.validate(type='text', value='#{summary_text.searchTerm}')
+        br
+        div.waves-effect.waves-light.btn.centerBlock#btnHide Show More
+        br
+        div#theContent(style='display:none')
+            h2 Top Words used in Positive Tweets
+            br
+            ul
+            each val in summary_text.topWords.topPositive
+                li
+                    a(href='/word-cloud/#{val.text}') #{val.freq} x <b>#{val.text}</b> (<span style='color: green'>#{val.sentiment*100}% positive</span>)
+            br
+            h2 Top Words used in Negative Tweets
+            br
+            ul
+            each val in summary_text.topWords.topNegative
+                li
+                    a(href='/word-cloud/#{val.text}')  #{val.freq} x <b>#{val.text}</b> (<span style='color: red'>#{val.sentiment*100}% negative</span>)
+            br
+            if summary_text.trending
+                h2 Trending Key Words
+                br
+                ul
+                each val in summary_text.trending
+                    li
+                        a(href='/word-cloud/#{val.text}') #{val.freq} x <b>#{val.text}</b>
+                br
+            else
+                a.waves-effect.waves-light.btn.centerBlock(href='/scatter-plot-words') View on Scatter Plot
+                br
+                br
+
+    main.content.zero-padding.zero-margin
+        svg#cloud(style='display: block; margin: 0 auto')
+
+block scripts
+    script(type='text/javascript', src='/bower_components/d3/d3.min.js')
+    script(type='text/javascript', src='/bower_components/d3-word-cloud/index.js')
+    script(type='text/javascript').
+        var wordData = !{JSON.stringify(data)};
+    script(type='text/javascript', src='/javascripts/word-cloud.bundle.js')
+
+
+  
